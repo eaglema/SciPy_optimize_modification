@@ -436,6 +436,7 @@ def _minimize_slsqp(func, x0, args=(), jac=None, bounds=None,
             g = append(wrapped_grad(x), 0.0)
             a = _eval_con_normals(x, cons, la, n, m, meq, mieq)
 
+        # Print iteration information
         if mode == -1:
             # call callback if major iteration has incremented
             if callback is not None:
