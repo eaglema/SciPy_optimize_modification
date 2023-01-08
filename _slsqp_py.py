@@ -417,6 +417,10 @@ def _minimize_slsqp(func, x0, args=(), jac=None, bounds=None,
     c = _eval_constraint(x, cons)
     a = _eval_con_normals(x, cons, la, n, m, meq, mieq)
 
+    # Print the status of the current iterate if iprint > 2
+    if iprint >= 2:
+        print("%5i %5i % 16.6E % 16.6E" % (0, 1,
+                                           fx, linalg.norm(g)))
     while 1:
         # Call SLSQP
         slsqp(m, meq, x, xl, xu, fx, c, g, a, acc, majiter, mode, w, jw,
@@ -432,7 +436,7 @@ def _minimize_slsqp(func, x0, args=(), jac=None, bounds=None,
             g = append(wrapped_grad(x), 0.0)
             a = _eval_con_normals(x, cons, la, n, m, meq, mieq)
 
-        if majiter > majiter_prev:
+        if mode == -1:
             # call callback if major iteration has incremented
             if callback is not None:
                 callback(np.copy(x))
@@ -441,6 +445,9 @@ def _minimize_slsqp(func, x0, args=(), jac=None, bounds=None,
             if iprint >= 2:
                 print("%5i %5i % 16.6E % 16.6E" % (majiter, sf.nfev,
                                                    fx, linalg.norm(g)))
+        elif mode == 1:
+            if iprint >= 3:
+                print(5*" " + "%5i %16.6E" %(sf.nfev, fx))
 
         # If exit mode is not -1 or 1, slsqp has completed
         if abs(mode) != 1:
